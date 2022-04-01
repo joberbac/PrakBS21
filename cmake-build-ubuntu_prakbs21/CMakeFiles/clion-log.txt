@@ -1,0 +1,4 @@
+/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /root/tmp/PrakBS21
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21
