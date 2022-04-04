@@ -123,6 +123,33 @@ PrakBS21/fast:
 	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/build
 .PHONY : PrakBS21/fast
 
+keyValStore.o: keyValStore.c.o
+
+.PHONY : keyValStore.o
+
+# target to build an object file
+keyValStore.c.o:
+	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/keyValStore.c.o
+.PHONY : keyValStore.c.o
+
+keyValStore.i: keyValStore.c.i
+
+.PHONY : keyValStore.i
+
+# target to preprocess a source file
+keyValStore.c.i:
+	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/keyValStore.c.i
+.PHONY : keyValStore.c.i
+
+keyValStore.s: keyValStore.c.s
+
+.PHONY : keyValStore.s
+
+# target to generate assembly for a file
+keyValStore.c.s:
+	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/keyValStore.c.s
+.PHONY : keyValStore.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -150,6 +177,33 @@ main.c.s:
 	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/main.c.s
 .PHONY : main.c.s
 
+sub.o: sub.c.o
+
+.PHONY : sub.o
+
+# target to build an object file
+sub.c.o:
+	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/sub.c.o
+.PHONY : sub.c.o
+
+sub.i: sub.c.i
+
+.PHONY : sub.i
+
+# target to preprocess a source file
+sub.c.i:
+	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/sub.c.i
+.PHONY : sub.c.i
+
+sub.s: sub.c.s
+
+.PHONY : sub.s
+
+# target to generate assembly for a file
+sub.c.s:
+	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/sub.c.s
+.PHONY : sub.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -159,9 +213,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... PrakBS21"
 	@echo "... edit_cache"
+	@echo "... keyValStore.o"
+	@echo "... keyValStore.i"
+	@echo "... keyValStore.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... sub.o"
+	@echo "... sub.i"
+	@echo "... sub.s"
 .PHONY : help
 
 

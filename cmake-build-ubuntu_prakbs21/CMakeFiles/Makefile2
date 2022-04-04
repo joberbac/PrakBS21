@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21
 CMakeFiles/PrakBS21.dir/all:
 	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/depend
 	$(MAKE) -f CMakeFiles/PrakBS21.dir/build.make CMakeFiles/PrakBS21.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21/CMakeFiles --progress-num=1,2 "Built target PrakBS21"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21/CMakeFiles --progress-num=1,2,3,4 "Built target PrakBS21"
 .PHONY : CMakeFiles/PrakBS21.dir/all
 
 # Include target in all.
@@ -76,7 +76,7 @@ all: CMakeFiles/PrakBS21.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/PrakBS21.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/PrakBS21.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21/CMakeFiles 0
 .PHONY : CMakeFiles/PrakBS21.dir/rule
