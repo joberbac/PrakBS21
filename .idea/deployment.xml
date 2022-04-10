@@ -2,15 +2,11 @@
 <project version="4">
   <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="ubuntu_PrakBS21 (907c5ba6-0fd6-4d0f-8b5b-6791b6df07a5)">
+      <paths name="Docker (334f6b4c-5456-4f2a-9a84-1bc24b186d19)">
         <serverdata>
           <mappings>
-            <mapping deploy="/root/tmp/PrakBS21" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/tmp/Praktikum" local="$PROJECT_DIR$" web="/" />
           </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-mac" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-ubuntu_prakbs21" />
-          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>

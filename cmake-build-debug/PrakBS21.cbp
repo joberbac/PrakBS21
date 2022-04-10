@@ -79,6 +79,9 @@
 		<Unit filename="/Users/danieloberle/Desktop/BS/Praktikum/main.c">
 			<Option target="PrakBS21"/>
 		</Unit>
+		<Unit filename="/Users/danieloberle/Desktop/BS/Praktikum/main.h">
+			<Option target="PrakBS21"/>
+		</Unit>
 		<Unit filename="/Users/danieloberle/Desktop/BS/Praktikum/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
