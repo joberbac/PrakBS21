@@ -1,8 +1,13 @@
 //
-// Created by dusti on 05.04.2022.
+// Created by dustin on 05.04.2022.
 //
+#ifndef KEYVALSTORE_H_
+#define KEYVALSTORE_H_
 
-#ifndef PRAKBS21_KEYVALUESTORE_H
-#define PRAKBS21_KEYVALUESTORE_H
+int put(char *key, char *value);
+int get(char *key);
+int del(char *key);
 
-#endif //PRAKBS21_KEYVALUESTORE_H
+
+
+#endif
