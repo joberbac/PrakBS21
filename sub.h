@@ -1,8 +1,17 @@
 //
-// Created by dusti on 05.04.2022.
+// Created by dustin on 05.04.2022.
 //
+#ifndef SUB_H_
+#define SUB_H_
 
-#ifndef PRAKBS21_SUB_H
-#define PRAKBS21_SUB_H
+char *connecter(char input[]);
+void ExtractKey(char* from,char* into);
+void ExtractValue(char* from,char* into);
+void fixInput(char* buffer);
+void *connect_sockets(void* socketNum);
+void serverResponse(char* command, char* key, char* value, int curSocket);
+void getFileName(char* key, char* into);
 
-#endif //PRAKBS21_SUB_H
+
+
+#endif
