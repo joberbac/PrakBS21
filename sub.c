@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/mman.h>
 
 #include "keyValStore.h"
 
@@ -69,21 +70,21 @@ void close_socket(int *sock) {
 
 
 
-struct input {
+struct input{
     char command_s[MAX_COMMAND_LENGTH];
     char key_s[MAX_KEY_LENGTH];
     char value_s[MAX_VALUE_LENGTH];
 };
 
 
-struct input input_func(int *fileDescriptor) {
+struct input * input_func(int *fileDescriptor) {
 
     char command[MAX_COMMAND_LENGTH] = {};
     char key[MAX_KEY_LENGTH] = {};
     char value[MAX_VALUE_LENGTH] = {};
     char buff[MAX_INPUT_LENGTH] = {};
 
-    struct input in;
+    static struct input in;
 
     int seperator[] = {0, 0};
     int x = 0;
@@ -127,26 +128,26 @@ struct input input_func(int *fileDescriptor) {
     strcpy(in.key_s, key);
     strcpy(in.value_s, value);
 
-    return in;
+    return &in;
 }
 
 
-int execCommand(struct input in, int *fileDescriptor) {
-    if (strcmp(in.command_s, "GET") == 0) {
-        return get(in.key_s, fileDescriptor);
+int execCommand(struct input *in, int *fileDescriptor, struct key_value_store *key_val) {
+    if (strcmp(in->command_s, "GET") == 0) {
+        return get(in->key_s, *fileDescriptor, key_val);
     }
 
-    else if (strcmp(in.command_s, "PUT") == 0) {
-        return put(in.key_s, in.value_s, fileDescriptor);
+    else if (strcmp(in->command_s, "PUT") == 0) {
+        return put(in->key_s, in->value_s, *fileDescriptor, key_val);
     }
 
-    else if (strcmp(in.command_s, "DEL") == 0) {
-        return del(in.key_s, fileDescriptor);
+    else if (strcmp(in->command_s, "DEL") == 0) {
+        return del(in->key_s, *fileDescriptor, key_val);
     }
 
-    else if (strcmp(in.command_s, "QUIT") == 0) {
+    else if (strcmp(in->command_s, "QUIT") == 0) {
         close_socket(fileDescriptor);
-        printf("Verbindung zu Client %i getrennt\n", *fileDescriptor);
+        printf("Verbindung zu Client getrennt\n");
         return 2;
     }
 
