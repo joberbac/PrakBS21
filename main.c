@@ -32,7 +32,7 @@ int main()///int main(int argc, char const *argv[])
     // create server socket		SOCK_STREAM = enables tcp/ip Protocoll	0= InternetProtocol
     if ((socketDescr = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        perror("socket failed");//////Exatcly I don't know what perror does but Youtubers using it in their tutorials
+        perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
@@ -84,8 +84,8 @@ int main()///int main(int argc, char const *argv[])
 
     while(1)//infinite loop  to make it continuous
     {
-        printf( "Waiting for client to connect!\n");
-        //storing socketconnection into new_socket
+        printf( "waiting for incoming clients...!\n");
+        //storing socket connection into new_socket
         if ((curSocket = accept(socketDescr, (struct sockaddr *)&address,(socklen_t*)&addrlen))<0)
         {
             perror("accept");
