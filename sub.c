@@ -10,11 +10,6 @@
 
 #include "keyValStore.h"
 
-static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;		//Mutex to prevent race conditions
-static pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
-
 int ReaderMode = 0;
 int wait2Write = 0;
 int soleSock = -1;
@@ -91,9 +86,6 @@ void getFileName(char* key, char* into)
     strcat(into,".txt");
 }
 
-
-
-
 void fixInput(char* buffer)
 {
     int index = 0;
@@ -123,40 +115,29 @@ void *connect_sockets(void* socketNum)
         strcpy(command, buffer);
         char key[1024]={'\0'};
         char value[1024];
-        pthread_mutex_lock(&mutex4);
-        pthread_mutex_unlock(&mutex4);
+
         if(curSocket == soleSock || soleSock == -1)
         {
             if(strstr(command, "PUT") != NULL ||strstr(command, "DEL") != NULL)	//Write-mode
             {
-                // 5x Mutex solve Reading
-                // Writing Problem
-                pthread_mutex_lock(&mutex2);
                 wait2Write ++;
-                pthread_mutex_unlock(&mutex2);
 
                 while(ReaderMode > 0)
                 {
                     sleep(1);	//waits 1 sec
                 }
-                pthread_mutex_lock(&mutex1);		//locking to prevent rase conditions.for Zombie Problem?
+             	//locking to prevent rase conditions.for Zombie Problem?
                 if (strstr(command, "PUT") != NULL)
                 {
                     ExtractKey(buffer,key);
                     ExtractValue(buffer, value);
                     put(key,value);
-
                 }
                 if (strstr(command, "DEL") != NULL) {
                     ExtractKey(buffer,key);
                     del(key);
-
                 }
-
-                pthread_mutex_unlock(&mutex1);		//unlock mutex
-                pthread_mutex_lock(&mutex2);
                 wait2Write--;
-                pthread_mutex_unlock(&mutex2);
             }
             else				//Reader-mod
             {
@@ -164,17 +145,13 @@ void *connect_sockets(void* socketNum)
                 {
                     sleep(1);
                 }
-                pthread_mutex_lock(&mutex3);
                 ReaderMode ++;
-                pthread_mutex_unlock(&mutex3);
                 if (strstr(command, "GET") != NULL)
                 {
                     ExtractKey(buffer,key);
                     get(key);
                 }
-                pthread_mutex_lock(&mutex3);
                 ReaderMode --;
-                pthread_mutex_unlock(&mutex3);
             }
         }else
         {
@@ -189,5 +166,4 @@ void *connect_sockets(void* socketNum)
     }
     return 0;
 }
-
 
