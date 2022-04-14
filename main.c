@@ -1,11 +1,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #include <printf.h>
-#include <stdlib.h>
 #include "sub.h"
-#include "keyValStore.h"
-
-#define BUF 1024
 
 int main() {
 
@@ -13,14 +10,22 @@ int main() {
     sock = create_socket(AF_INET, SOCK_STREAM, 0);
     bind_socket(&sock, INADDR_ANY, 5678);
     listen_socket(&sock);
+    printf("Server running...\n");
 
-    while (1) {
+
+    do {
 
         accept_socket(&sock, &fileDescriptor);
+        printf("New Client connected\n");
+        send(fileDescriptor, "Hello Client\n", sizeof ("Hello Client\n"), 0);
 
-        do {
+        if (fork() == 0) {
+            while (execCommand(input_func(&fileDescriptor), &fileDescriptor) != 2) {
 
-        } while (input(&sock, fileDescriptor) != 2);
+            }
+        }
+        else
+            close_socket(&fileDescriptor);
+    } while (1);
 
-    }
 }
