@@ -1,3 +1,5 @@
+#include "keyValStore.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -11,12 +13,12 @@
 #define MAX_OUTPUT_LENGTH 100
 
 
-/*struct key_value_store {
-    char key_s[MAX_KEY_LENGTH];
-    char value_s[MAX_VALUE_LENGTH];
-};*/
-
-
+/*********************************************** PUT *****************************************************************/
+/*
+ * Die put() Funktion soll eine Wert (value) mit dem Schlüsselwert (key) hinterlegen.
+ * Wenn der Schlüssel bereits vorhanden ist, soll der Wert überschrieben werden.
+ * Der Rückgabewert der Funktion könnte Auskunft dazu geben.
+ */
 int put(char *key, char *value, int fileDescriptor, struct key_value_store *key_val) {
     char output[MAX_OUTPUT_LENGTH] = {};
     if (strcmp(key, "") == 0) {
@@ -57,6 +59,14 @@ int put(char *key, char *value, int fileDescriptor, struct key_value_store *key_
     return -1;
 }
 
+
+
+/*********************************************** GET *****************************************************************/
+/*
+ * Die get() Funktion soll einen Schlüsselwert (key) in der Datenhaltung suchen
+ * und den hinterlegten Wert (value) zurückgeben.
+ * Ist der Wert nicht vorhanden, wird durch einen Rückgabewert <0 darauf aufmerksam gemacht.
+ * */
 int get(char *key, int fileDescriptor, struct key_value_store *key_val) {
     char output[MAX_OUTPUT_LENGTH] = {};
     if (strcmp(key, "") == 0) {
@@ -80,6 +90,11 @@ int get(char *key, int fileDescriptor, struct key_value_store *key_val) {
     return -1;
 }
 
+
+/*********************************************** DEL *****************************************************************/
+/*
+ * Die del() Funktion soll einen Schlüsselwert suchen und zusammen mit dem Wert aus der Datenhaltung entfernen.
+ */
 int del(char *key, int fileDescriptor, struct key_value_store *key_val) {
     char output[MAX_OUTPUT_LENGTH] = {};
     char temp[MAX_KEY_LENGTH];
