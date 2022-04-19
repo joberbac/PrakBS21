@@ -6,7 +6,19 @@
 
 #IncludeRegexTransform: 
 
+/root/tmp/PrakBS21/keyValStore.c
+keyValStore.h
+/root/tmp/PrakBS21/keyValStore.h
+
+/root/tmp/PrakBS21/keyValStore.h
+
 /root/tmp/PrakBS21/main.c
 stdio.h
 -
+
+/root/tmp/PrakBS21/sub.c
+sub.h
+/root/tmp/PrakBS21/sub.h
+
+/root/tmp/PrakBS21/sub.h
 

@@ -1,0 +1,8 @@
+# manual notes
+1. main.c in CLion ausführen
+
+2. Terminal Fenster öffnen und Verbinden mit
+```
+telnet localhost PortNummer
+```
+Portnummer steht in main.c ganz oben
