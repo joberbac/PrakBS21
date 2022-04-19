@@ -14,7 +14,7 @@
 int main() {
 
     int socket_fd; // Rendezvous-Descriptor / Rückgabewert des Sockets → File descriptor
-    int cfd; // Connection-Descriptor
+    int cfd; // Connection-File-Descriptor
 
     socket_fd = create_socket(AF_INET, SOCK_STREAM, 0);
     bind_socket(&socket_fd, INADDR_ANY, PORT);
@@ -39,7 +39,6 @@ int main() {
             close(cfd); //TODO break in Loop inorder to be able to close Rendezvous Descriptor and Terminate
     } while (1);
 
-    //TODO close and empty shared memory
     // Rendezvous Descriptor schließen
     close(socket_fd);
     exit(0);

@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/root/tmp/PrakBS21/main.c" "/root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21/CMakeFiles/PrakBS21.dir/main.c.o"
+  "/tmp/tmp.aaf28anzMV/main.c" "/tmp/tmp.aaf28anzMV/cmake-build-ubuntu_prakbs21/CMakeFiles/PrakBS21.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

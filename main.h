@@ -1,6 +1,5 @@
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef PRAKBS21_MAIN_H
+#define PRAKBS21_MAIN_H
 
 int main();
-
-#endif
+#endif //PRAKBS21_MAIN_H

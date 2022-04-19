@@ -1,4 +1,8 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /root/tmp/PrakBS21
--- Configuring done
--- Generating done
--- Build files have been written to: /root/tmp/PrakBS21/cmake-build-ubuntu_prakbs21
+/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /tmp/tmp.aaf28anzMV
+CMake Error at CMakeLists.txt:1:
+  Parse error.  Expected a command name, got unquoted argument with text
+  "<<<<<<<".
+
+
+-- Configuring incomplete, errors occurred!
+See also "/tmp/tmp.aaf28anzMV/cmake-build-ubuntu_prakbs21/CMakeFiles/CMakeOutput.log".

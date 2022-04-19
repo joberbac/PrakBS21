@@ -78,6 +78,18 @@ build CMakeFiles/PrakBS21.dir/main.c.o: C_COMPILER__PrakBS21_Debug /Users/jo/Doc
   OBJECT_DIR = CMakeFiles/PrakBS21.dir
   OBJECT_FILE_DIR = CMakeFiles/PrakBS21.dir
 
+build CMakeFiles/PrakBS21.dir/sub.c.o: C_COMPILER__PrakBS21_Debug /Users/jo/Documents/meineDateien/Buero/TH-Koeln/BachelorOfScience/Betrieb/BS/PrakBS21/sub.c || cmake_object_order_depends_target_PrakBS21
+  DEP_FILE = CMakeFiles/PrakBS21.dir/sub.c.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -mmacosx-version-min=12.0 -std=gnu99
+  OBJECT_DIR = CMakeFiles/PrakBS21.dir
+  OBJECT_FILE_DIR = CMakeFiles/PrakBS21.dir
+
+build CMakeFiles/PrakBS21.dir/keyValStore.c.o: C_COMPILER__PrakBS21_Debug /Users/jo/Documents/meineDateien/Buero/TH-Koeln/BachelorOfScience/Betrieb/BS/PrakBS21/keyValStore.c || cmake_object_order_depends_target_PrakBS21
+  DEP_FILE = CMakeFiles/PrakBS21.dir/keyValStore.c.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -mmacosx-version-min=12.0 -std=gnu99
+  OBJECT_DIR = CMakeFiles/PrakBS21.dir
+  OBJECT_FILE_DIR = CMakeFiles/PrakBS21.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target PrakBS21
@@ -86,7 +98,7 @@ build CMakeFiles/PrakBS21.dir/main.c.o: C_COMPILER__PrakBS21_Debug /Users/jo/Doc
 #############################################
 # Link the executable PrakBS21
 
-build PrakBS21: C_EXECUTABLE_LINKER__PrakBS21_Debug CMakeFiles/PrakBS21.dir/main.c.o
+build PrakBS21: C_EXECUTABLE_LINKER__PrakBS21_Debug CMakeFiles/PrakBS21.dir/main.c.o CMakeFiles/PrakBS21.dir/sub.c.o CMakeFiles/PrakBS21.dir/keyValStore.c.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -mmacosx-version-min=12.0
   OBJECT_DIR = CMakeFiles/PrakBS21.dir
   POST_BUILD = :

@@ -1,4 +1,9 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja /Users/jo/Documents/meineDateien/Buero/TH-Koeln/BachelorOfScience/Betrieb/BS/PrakBS21
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/jo/Documents/meineDateien/Buero/TH-Koeln/BachelorOfScience/Betrieb/BS/PrakBS21/cmake-build-mac
+CMake Error at CMakeLists.txt:1:
+  Parse error.  Expected a command name, got unquoted argument with text
+  "<<<<<<<".
+
+
+-- Configuring incomplete, errors occurred!
+See also "/Users/jo/Documents/meineDateien/Buero/TH-Koeln/BachelorOfScience/Betrieb/BS/PrakBS21/cmake-build-mac/CMakeFiles/CMakeOutput.log".
+See also "/Users/jo/Documents/meineDateien/Buero/TH-Koeln/BachelorOfScience/Betrieb/BS/PrakBS21/cmake-build-mac/CMakeFiles/CMakeError.log".
