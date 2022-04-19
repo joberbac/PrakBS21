@@ -19,19 +19,19 @@
  * Wenn der Schlüssel bereits vorhanden ist, soll der Wert überschrieben werden.
  * Der Rückgabewert der Funktion könnte Auskunft dazu geben.
  */
-int put(char *key, char *value, int fileDescriptor, struct key_value_store *key_val) {
+int put(char *key, char *value, int cfd, struct key_value_store *key_val) {
     char output[MAX_OUTPUT_LENGTH] = {};
     if (strcmp(key, "") == 0) {
         snprintf(output, sizeof output, "No Key\n");
         printf("%s", output);
-        send(fileDescriptor, output, sizeof (output), 0);
+        send(cfd, output, sizeof (output), 0);
         return 1;
     }
 
     if (strcmp(value, "") == 0) {
         snprintf(output, sizeof output, "No Value\n");
         printf("%s", output);
-        send(fileDescriptor, output, sizeof (output), 0);
+        send(cfd, output, sizeof (output), 0);
         return 1;
     }
 
@@ -40,7 +40,7 @@ int put(char *key, char *value, int fileDescriptor, struct key_value_store *key_
             strcpy(key_val[i].value_s, value);
             snprintf(output, sizeof output, "PUT:%s:%s:override\n", key_val[i].key_s, key_val[i].value_s);
             printf("%s", output);
-            send(fileDescriptor, output, sizeof (output), 0);
+            send(cfd, output, sizeof (output), 0);
             return 0;
         }
     }
@@ -51,7 +51,7 @@ int put(char *key, char *value, int fileDescriptor, struct key_value_store *key_
             strcpy(key_val[i].value_s, value);
             snprintf(output, sizeof output, "PUT:%s:%s\n", key_val[i].key_s, key_val[i].value_s);
             printf("%s", output);
-            send(fileDescriptor, output, sizeof (output), 0);
+            send(cfd, output, sizeof (output), 0);
             return 0;
         }
     }
@@ -67,12 +67,12 @@ int put(char *key, char *value, int fileDescriptor, struct key_value_store *key_
  * und den hinterlegten Wert (value) zurückgeben.
  * Ist der Wert nicht vorhanden, wird durch einen Rückgabewert <0 darauf aufmerksam gemacht.
  * */
-int get(char *key, int fileDescriptor, struct key_value_store *key_val) {
+int get(char *key, int cfd, struct key_value_store *key_val) {
     char output[MAX_OUTPUT_LENGTH] = {};
     if (strcmp(key, "") == 0) {
         snprintf(output, sizeof output, "No Key\n");
         printf("%s", output);
-        send(fileDescriptor, output, sizeof (output), 0);
+        send(cfd, output, sizeof (output), 0);
         return 1;
     }
 
@@ -80,13 +80,13 @@ int get(char *key, int fileDescriptor, struct key_value_store *key_val) {
         if (strcmp(key_val[i].key_s, key) == 0) {
             snprintf(output, sizeof output, "GET:%s:%s\n", key_val[i].key_s, key_val[i].value_s);
             printf("%s", output);
-            send(fileDescriptor, output, sizeof (output), 0);
+            send(cfd, output, sizeof (output), 0);
             return 0;
         }
     }
     snprintf(output, sizeof output, "GET:%s:key_nonexistent\n", key);
     printf("%s", output);
-    send(fileDescriptor, output, sizeof (output), 0);
+    send(cfd, output, sizeof (output), 0);
     return -1;
 }
 
@@ -95,7 +95,7 @@ int get(char *key, int fileDescriptor, struct key_value_store *key_val) {
 /*
  * Die del() Funktion soll einen Schlüsselwert suchen und zusammen mit dem Wert aus der Datenhaltung entfernen.
  */
-int del(char *key, int fileDescriptor, struct key_value_store *key_val) {
+int del(char *key, int cfd, struct key_value_store *key_val) {
     char output[MAX_OUTPUT_LENGTH] = {};
     char temp[MAX_KEY_LENGTH];
     for (int i = 0; i < MAX_KEY_VALUE_STORE_SIZE; i++) {
@@ -105,12 +105,12 @@ int del(char *key, int fileDescriptor, struct key_value_store *key_val) {
             strcpy(key_val[i].value_s, "");
             snprintf(output, sizeof output, "DEL:%s:key_deleted\n", temp);
             printf("%s", output);
-            send(fileDescriptor, output, sizeof (output), 0);
+            send(cfd, output, sizeof (output), 0);
             return 0;
         }
     }
     snprintf(output, sizeof output, "DEL:%s:key_nonexistent\n", key);
     printf("%s", output);
-    send(fileDescriptor, output, sizeof (output), 0);
+    send(cfd, output, sizeof (output), 0);
     return -1;
 }
