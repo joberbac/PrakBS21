@@ -6,3 +6,29 @@
 telnet localhost PortNummer
 ```
 Portnummer steht in main.c ganz oben
+
+
+
+# example communicatioin
+/*
+* key und value akzeptieren alphanumerische Zeichen, keine Sonderzeichen.
+* Der key darf keine Leerzeichen enthalten.
+* INPUT-Format: [command:key:value]
+ *
+ * BSP:
+    GET key1
+    > GET:key1:key_nonexistent
+    PUT key1 value1
+    > PUT:key1:value1
+    PUT key2 value2
+    > PUT:key2:value2
+    PUT key1 value3
+    > PUT:key1:value3
+    DEL key2
+    > DEL:key2:key_deleted
+    DEL key2
+    > DEL:key2:key_nonexistent
+    GET key1
+    > GET:key1:value3
+    QUIT
+*/

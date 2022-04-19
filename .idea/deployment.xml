@@ -5,7 +5,7 @@
       <paths name="ubuntu_PrakBS21 (907c5ba6-0fd6-4d0f-8b5b-6791b6df07a5)">
         <serverdata>
           <mappings>
-            <mapping deploy="/root/tmp/PrakBS21" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/tmp/tmp.aaf28anzMV" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-mac" />
