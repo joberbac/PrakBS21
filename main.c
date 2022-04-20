@@ -13,6 +13,8 @@
 
 int main() {
 
+    struct input in;
+
     int exit;
 
     int sock_fd;            //Rendezvous-Descriptor, Rückgabewert des Sockets
@@ -58,9 +60,10 @@ int main() {
             leave.sem_op = 1;                           //Up-Operation, Semaphore wird um diesen Wert erhöht
 
             while (exit != 2) {
+                in = *input_func(&connection_fd);
                 if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
                     error_exit("Error at semop");
-                exit = execCommand(input_func(&connection_fd), &connection_fd, shar_mem);
+                exit = execCommand(&in, &connection_fd, shar_mem);
                 if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
                     error_exit("Error at semop");
             }

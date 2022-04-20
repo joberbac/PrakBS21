@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/sem.h>
 
 #include "keyValStore.h"
 
