@@ -4,7 +4,6 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/mman.h>
 
 #include "keyValStore.h"
 
@@ -12,6 +11,7 @@
 #define MAX_COMMAND_LENGTH 10
 #define MAX_KEY_LENGTH 10
 #define MAX_VALUE_LENGTH 100
+
 
 //Die Funktion gibt aufgetretene Fehler aus und beendet die Anwendung.
 void error_exit(char *error_message) {
@@ -24,49 +24,48 @@ int create_socket(int af, int type, int protocol) {
     int sock;
 
     if ((sock = socket(af, type, protocol)) < 0) {
-        error_exit("Fehler beim Anlegen eines Sockets\n");
+        error_exit("Error at creating stream socket");
     }
 
     return sock;
 }
 
 //Weist dem Socket die IP-Adresse und die Portnummer zu, unter der das Socket auf Anfragen wartet.
-void bind_socket(int *sock, unsigned long address, unsigned short port) {
+void bind_socket(int *sock_fd, unsigned long address, unsigned short port) {
     struct sockaddr_in server;
-    server.sin_family = AF_INET;
+    server.sin_family = AF_INET;                    //AF_INET = IPv4
     server.sin_addr.s_addr = htonl(address);        //Die Kommunikationsschnittstelle des Hosts. Normalerweise die IP-Adresse.
     server.sin_port = htons(port);                  //Transformiert die Portnummer in Network-Byte-Order.
 
-    if (bind(*sock, (struct sockaddr*)&server, sizeof (server)) < 0) {
-        error_exit("Kann das Socket nicht \"binden\"\n");
+    if (bind(*sock_fd, (struct sockaddr*)&server, sizeof (server)) < 0) {
+        error_exit("Error at binding socket");
     }
 }
 
 //Warteschlange, die auf eingehende Verbindungswünsche eines Clients wartet.
-void listen_socket(int *sock) {
-    if (listen(*sock, 5) == -1) {
-        error_exit("Fehler bei listen\n");
+void listen_socket(int *sock_fd, int backlog) {
+    if (listen(*sock_fd, backlog) == -1) {
+        error_exit("Error at listen");
     }
 }
 
 //Bearbeitet die Verbindungswünsche von Clients.
 //Der Aufruf von accept() blockiert so lange, bis ein Client Verbindung aufnimmt.
-void accept_socket(int *sock, int *fileDescriptor) {
+void accept_socket(int *sock_fd, int *connection_fd) {
     struct sockaddr_in client;
     unsigned int client_size = sizeof (client);
 
-    *fileDescriptor = accept(*sock, (struct sockaddr*)&client, &client_size);  //Rückgabewert von accept() ein neues Socket
+    *connection_fd = accept(*sock_fd, (struct sockaddr*)&client, &client_size);
 
-    if (*fileDescriptor == -1) {
-        error_exit("Fehler bei accept");
+    if (*connection_fd == -1) {
+        error_exit("Error at accept");
     }
 }
 
 //Socket schließen
-void close_socket(int *sock) {
-    close(*sock);
+void close_socket(int *sock_fd) {
+    close(*sock_fd);
 }
-
 
 
 
@@ -77,7 +76,15 @@ struct input{
 };
 
 
-struct input * input_func(int *fileDescriptor) {
+void output(int *connection_fd, char *message) {
+    printf("%s", message);
+    if (write(*connection_fd, message, strlen (message)) == -1) {
+        error_exit("Error at output");
+    }
+}
+
+
+struct input * input_func(int *connection_fd) {
 
     char command[MAX_COMMAND_LENGTH] = {};
     char key[MAX_KEY_LENGTH] = {};
@@ -86,43 +93,37 @@ struct input * input_func(int *fileDescriptor) {
 
     static struct input in;
 
-    int seperator[] = {0, 0};
+    int seperator[] = {0, 0};       //Seperator = Trenner zwischen den Command, Key und Value
     int x = 0;
     int y = 0;
     int z = 0;
 
-
-    read(*fileDescriptor, buff, sizeof(buff));
+    read(*connection_fd, buff, sizeof(buff));
     buff[strlen(buff) - 2] = ' ';
 
-
     //Trennen des Strings
-    for (int i = 0; i < strlen(buff); i++) {
+    for (int i = 0; i < strlen(buff); i++) {        //Ermittelt die Stellen der " " Leerzeichen
         if (buff[i] == ' ') {
             seperator[x] = i;
             x++;
         }
     }
 
-
-    for (int i = 0; i < seperator[0]; i++) {
+    for (int i = 0; i < seperator[0]; i++) {        //Separiert den Command
         command[i] = buff[i];
     }
 
-
-    for (int i = seperator[0] + 1; i < seperator[1]; i++) {
+    for (int i = seperator[0] + 1; i < seperator[1]; i++) {     //Separiert den Key
         key[y] = buff[i];
         y++;
     }
 
-
-    if (seperator[1] != 0) {
+    if (seperator[1] != 0) {        //Separiert den Value
         for (int i = seperator[1] + 1; i < strlen(buff) - 2; i++) {
             value[z] = buff[i];
             z++;
         }
     }
-
 
     strcpy(in.command_s, command);
     strcpy(in.key_s, key);
@@ -132,30 +133,31 @@ struct input * input_func(int *fileDescriptor) {
 }
 
 
-int execCommand(struct input *in, int *fileDescriptor, struct key_value_store *key_val) {
+int execCommand(struct input *in, int *connection_fd, struct key_value_store *shar_mem) {
+
     if (strcmp(in->command_s, "GET") == 0) {
-        return get(in->key_s, *fileDescriptor, key_val);
+        return get(in->key_s, connection_fd, shar_mem);
     }
 
     else if (strcmp(in->command_s, "PUT") == 0) {
-        return put(in->key_s, in->value_s, *fileDescriptor, key_val);
+        return put(in->key_s, in->value_s, connection_fd, shar_mem);
     }
 
     else if (strcmp(in->command_s, "DEL") == 0) {
-        return del(in->key_s, *fileDescriptor, key_val);
+        return del(in->key_s, connection_fd, shar_mem);
     }
 
     else if (strcmp(in->command_s, "QUIT") == 0) {
-        close_socket(fileDescriptor);
+        close_socket(connection_fd);
         printf("Verbindung zu Client getrennt\n");
         return 2;
     }
 
     else {
-        printf("Falsche Eingabe\n");
-        if (send(*fileDescriptor, "Falsche Eingabe\n", sizeof ("Falsche Eingabe\n"), 0) == -1) {
-            printf("Fehler bei send()\n");
-        }
+        output(connection_fd, "Falsche Eingabe\n");
         return 0;
     }
 }
+
+
+

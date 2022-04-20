@@ -13,7 +13,7 @@ struct key_value_store {
     char value_s[MAX_VALUE_LENGTH];
 };
 
-struct input {
+struct input{
     char command_s[MAX_COMMAND_LENGTH];
     char key_s[MAX_KEY_LENGTH];
     char value_s[MAX_VALUE_LENGTH];
@@ -21,13 +21,14 @@ struct input {
 
 void error_exit(char *error_message);
 int create_socket(int af, int type, int protocol);
-void bind_socket(int *sock, unsigned long address, unsigned short port);
-void listen_socket(int *sock);
-void accept_socket(int *sock, int *fileDescriptor);
-void close_socket(int *sock);
+void bind_socket(int *sock_fd, unsigned long address, unsigned short port);
+void listen_socket(int *sock_fd, int backlog);
+void accept_socket(int *sock_fd, int *connection_fd);
+void close_socket(int *sock_fd);
 
-struct input * input_func(int *fileDescriptor);
-int execCommand(struct input *in, int *fileDescriptor, struct key_value_store *key_val);
+void output(int *connection_fd, char *string);
+struct input * input_func(int *connection_fd);
+int execCommand(struct input *in, int *connection_fd, struct key_value_store *shar_mem);
 
 
 #endif
