@@ -105,6 +105,8 @@ struct input * input_func(int *connection_fd) {
     //Trennen des Strings
     for (int i = 0; i < strlen(buff); i++) {        //Ermittelt die Stellen der " " Leerzeichen
         if (buff[i] == ' ') {
+            if (x == 2)
+                break;
             seperator[x] = i;
             x++;
         }
@@ -152,6 +154,14 @@ int execCommand(struct input *in, int *connection_fd, struct key_value_store *sh
         close_socket(connection_fd);
         printf("Verbindung zu Client getrennt\n");
         return 2;
+    }
+
+    else if (strcmp(in->command_s, "BEG") == 0) {
+        return 5;
+    }
+
+    else if (strcmp(in->command_s, "END") == 0) {
+        return 6;
     }
 
     else {

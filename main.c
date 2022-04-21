@@ -15,7 +15,7 @@ int main() {
 
     struct input in;
 
-    int exit;
+    int returnExecCommand;
 
     int sock_fd;            //Rendezvous-Descriptor, Rückgabewert des Sockets
     int connection_fd;      //Verbindungsdescriptor
@@ -49,8 +49,8 @@ int main() {
         write(connection_fd, "Hello Client\n", sizeof ("Hello Client\n"));
 
         int pid = fork();
-        if (pid < 0)            //Fehler beo fork()
-            error_exit("fork");
+        if (pid < 0)            //Fehler bei fork()
+            error_exit("Error at fork");
         else if (pid == 0) {        //Kindprozess
 
             struct sembuf enter, leave;
@@ -59,11 +59,11 @@ int main() {
             enter.sem_op = -1;                          //Down-Operation, Semaphore wird um diesen Wert vermindert
             leave.sem_op = 1;                           //Up-Operation, Semaphore wird um diesen Wert erhöht
 
-            while (exit != 2) {
+            while (returnExecCommand != 2) {
                 in = *input_func(&connection_fd);
                 if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
                     error_exit("Error at semop");
-                exit = execCommand(&in, &connection_fd, shar_mem);
+                returnExecCommand = execCommand(&in, &connection_fd, shar_mem);
                 if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
                     error_exit("Error at semop");
             }
