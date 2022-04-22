@@ -9,8 +9,13 @@ struct key_value_store {
     char value_s[MAX_VALUE_LENGTH];
 };
 
-int put(char *key, char *value, int *connection_fd, struct key_value_store *shar_mem);
+struct subscribe{
+    int pid;
+    char key_s[MAX_KEY_LENGTH];
+};
+
+int put(char *key, char *value, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub);
 int get(char *key, int *connection_fd, struct key_value_store *shar_mem);
-int del(char *key, int *connection_fd, struct key_value_store *shar_mem);
+int del(char *key, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub);
 
 #endif
