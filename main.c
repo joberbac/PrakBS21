@@ -4,6 +4,7 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <stdio.h>
+#include <string.h>
 #include "sub.h"
 
 #define PORT 5678
@@ -62,6 +63,11 @@ int main() {
     /*SEMAPHORE ENDE*/
 
 
+    /*NACHRICHTENWARTESCHLANGE*/
+
+    /*NACHRICHTENWARTESCHLANGE ENDE*/
+
+
     while(1) {
 
         accept_socket(&sock_fd, &connection_fd);
@@ -82,16 +88,35 @@ int main() {
             enter.sem_op = -1;                          //Down-Operation, Semaphore wird um diesen Wert vermindert
             leave.sem_op = 1;                           //Up-Operation, Semaphore wird um diesen Wert erhöht
 
-            while (returnExecCommand != 2) {
+            int blocked = 0;
+
+            do {
                 in = *input_func(&connection_fd);
-                if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
-                    error_exit("Error at semop");
+
+                if (blocked == 0) {
+                    if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
+                        error_exit("Error at semop");
+                }
+                if (blocked == 0) {
+                    if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
+                        error_exit("Error at semop");
+                }
 
                 returnExecCommand = execCommand(&in, &connection_fd, shar_mem, sub);
 
-                if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
-                    error_exit("Error at semop");
-            }
+                if (returnExecCommand == 7) {
+                    if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
+                        error_exit("Error at semop");
+                    blocked = 1;
+                }
+
+                if (returnExecCommand == 8) {
+                    if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
+                        error_exit("Error at semop");
+                    blocked = 0;
+                }
+
+            } while (returnExecCommand != 2);
         }
 
     }

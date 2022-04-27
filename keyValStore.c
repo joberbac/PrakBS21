@@ -8,6 +8,7 @@
 #define MAX_KEY_VALUE_STORE_SIZE 10
 #define MAX_OUTPUT_LENGTH 100
 
+
 int put(char *key, char *value, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub) {
     char message[MAX_OUTPUT_LENGTH] = {};
     if (strcmp(key, "") == 0) {

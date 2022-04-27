@@ -4,9 +4,10 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/sem.h>
+#include <ctype.h>
 
 #include "keyValStore.h"
+#include "main.h"
 
 #define MAX_INPUT_LENGTH 1000
 #define MAX_COMMAND_LENGTH 10
@@ -114,25 +115,21 @@ struct input * input_func(int *connection_fd) {
         }
     }
 
-    for (int i = 0; i < seperator[0]; i++) {        //Separiert den Command
-        command[i] = buff[i];
+    for (int i = 0; i < seperator[0]; i++) {       //Separiert den Command
+        in.command_s[i] = toupper(buff[i]);
     }
 
     for (int i = seperator[0] + 1; i < seperator[1]; i++) {     //Separiert den Key
-        key[y] = buff[i];
+        in.key_s[y] = buff[i];
         y++;
     }
 
     if (seperator[1] != 0) {        //Separiert den Value
         for (int i = seperator[1] + 1; i < strlen(buff) - 2; i++) {
-            value[z] = buff[i];
+            in.value_s[z] = buff[i];
             z++;
         }
     }
-
-    strcpy(in.command_s, command);
-    strcpy(in.key_s, key);
-    strcpy(in.value_s, value);
 
     return &in;
 }
@@ -181,12 +178,12 @@ int unsub(struct subscribe *sub, char *key, int *connection_fd) {
             strcpy(temp, sub[i].key_s);
             strcpy(sub[i].key_s, "");
             sub[i].pid = 0;
-            snprintf(message, sizeof message, "sub_deleted\n");
+            snprintf(message, sizeof message, "SUB:%s:sub_deleted\n", key);
             output(connection_fd, message);
             return 0;
         }
     }
-    snprintf(message, sizeof message, "sub_nonexistent\n");
+    snprintf(message, sizeof message, "SUB:%s:sub_nonexistent\n", key);
     output(connection_fd, message);
     return -1;
 }
@@ -195,7 +192,7 @@ int unsub(struct subscribe *sub, char *key, int *connection_fd) {
 void notify(struct subscribe *sub, struct key_value_store *shar_mem, char *key) {
     printf("notify");
     char message[MAX_OUTPUT_LENGTH] = {};
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < MAX_SUB_SIZE; i++) {
         if (strcmp(sub[i].key_s, key)) {
             //printf("GEHT %d", sub[i].pid);
             //snprintf(message, sizeof message, "notify\n");
@@ -208,7 +205,7 @@ void notify(struct subscribe *sub, struct key_value_store *shar_mem, char *key) 
 
 int execCommand(struct input *in, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub) {
 
-    if (strcmp(in->command_s, "GET") == 0) {
+    if (strcmp( in->command_s, "GET") == 0) {
         return get(in->key_s, connection_fd, shar_mem);
     }
 
@@ -234,6 +231,16 @@ int execCommand(struct input *in, int *connection_fd, struct key_value_store *sh
     else if (strcmp(in->command_s, "UNSUB") == 0) {
         unsub(sub, in->key_s, connection_fd);
         return 6;
+    }
+
+    else if (strcmp(in->command_s, "BEG") == 0) {
+
+        return 7;
+    }
+
+    else if (strcmp(in->command_s, "END") == 0) {
+
+        return 8;
     }
 
     else {
