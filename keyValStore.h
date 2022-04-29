@@ -14,8 +14,8 @@ struct subscribe{
     char key_s[MAX_KEY_LENGTH];
 };
 
-int put(char *key, char *value, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub);
+int put(char *key, char *value, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub, int *msg_id);
 int get(char *key, int *connection_fd, struct key_value_store *shar_mem);
-int del(char *key, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub);
+int del(char *key, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub, int *msg_id);
 
 #endif

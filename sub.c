@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/msg.h>
 
 #include "keyValStore.h"
 #include "main.h"
@@ -13,8 +14,10 @@
 #define MAX_COMMAND_LENGTH 10
 #define MAX_KEY_LENGTH 10
 #define MAX_VALUE_LENGTH 100
-#define MAX_OUTPUT_LENGTH 100
+#define MAX_OUTPUT_LENGTH 1000
 #define MAX_SUB_SIZE 10
+
+#define MAX_KEY_VALUE_STORE_SIZE 10
 
 
 //Die Funktion gibt aufgetretene Fehler aus und beendet die Anwendung.
@@ -116,20 +119,24 @@ struct input * input_func(int *connection_fd) {
     }
 
     for (int i = 0; i < seperator[0]; i++) {       //Separiert den Command
-        in.command_s[i] = toupper(buff[i]);
+        command[i] = toupper(buff[i]);
     }
 
     for (int i = seperator[0] + 1; i < seperator[1]; i++) {     //Separiert den Key
-        in.key_s[y] = buff[i];
+        key[y] = buff[i];
         y++;
     }
 
     if (seperator[1] != 0) {        //Separiert den Value
         for (int i = seperator[1] + 1; i < strlen(buff) - 2; i++) {
-            in.value_s[z] = buff[i];
+            value[z] = buff[i];
             z++;
         }
     }
+
+    strcpy(in.command_s, command);
+    strcpy(in.key_s, key);
+    strcpy(in.value_s, value);
 
     return &in;
 }
@@ -155,7 +162,7 @@ int subscribe(struct subscribe *sub, char *key, int *connection_fd) {
         if (strcmp(sub[i].key_s, "") == 0) {
             sub[i].pid = getpid();
             strcpy(sub[i].key_s, key);
-            snprintf(message, sizeof message, "SUB:%s\n", key);
+            snprintf(message, sizeof message, "SUB:%s\n", sub[i].key_s);
             output(connection_fd, message);
             return 0;
         }
@@ -189,32 +196,59 @@ int unsub(struct subscribe *sub, char *key, int *connection_fd) {
 }
 
 
-void notify(struct subscribe *sub, struct key_value_store *shar_mem, char *key) {
-    printf("notify");
-    char message[MAX_OUTPUT_LENGTH] = {};
+struct text_message {
+    long mtype;
+    char mtext[MAX_OUTPUT_LENGTH];
+};
+
+
+struct text_message send_message;
+struct text_message rec_message;
+
+void notify(struct subscribe *sub, struct key_value_store *shar_mem, char *key, int *msg_id, char *string) {
+    char message[MAX_OUTPUT_LENGTH] = "";
     for (int i = 0; i < MAX_SUB_SIZE; i++) {
-        if (strcmp(sub[i].key_s, key)) {
-            //printf("GEHT %d", sub[i].pid);
-            //snprintf(message, sizeof message, "notify\n");
-            //output(&sub[i].pid, message);
-            printf("Sub gefunden\n");
+        if (strcmp(sub[i].key_s, key) == 0) {
+            send_message.mtype = sub[i].pid + 1;
+            for (int j = 0; j < MAX_KEY_VALUE_STORE_SIZE; j++) {
+                if (strcmp(shar_mem[j].key_s, key) == 0) {
+                    char src[MAX_VALUE_LENGTH] = {}, dest[MAX_VALUE_LENGTH] = {};
+                    strcpy(src, shar_mem[j].value_s);
+                    strcpy(dest, shar_mem[j].key_s);
+                    snprintf(message, sizeof message, "%s:%s:%s\n", string, shar_mem[j].key_s, shar_mem[j].value_s);
+                    strcpy(send_message.mtext, message);
+                }
+            }
+            if (msgsnd(*msg_id, &send_message, sizeof (send_message.mtext), 0) < 0)
+                error_exit("Error at notify");
         }
     }
 }
 
 
-int execCommand(struct input *in, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub) {
+void receiveMessage(int *msg_id, int *connection_fd) {
+    char message[MAX_OUTPUT_LENGTH] = "";
+    if (msgrcv(*msg_id, &rec_message, sizeof (rec_message), getpid(), 0) < 0)
+        error_exit("Error at msgrcv");
+    else {
+        snprintf(message, sizeof message, "%s\n", rec_message.mtext);
+        output(connection_fd, message);
+    }
+}
+
+
+int execCommand(struct input *in, int *connection_fd, struct key_value_store *shar_mem, struct subscribe *sub, int *msg_id) {
 
     if (strcmp( in->command_s, "GET") == 0) {
         return get(in->key_s, connection_fd, shar_mem);
     }
 
     else if (strcmp(in->command_s, "PUT") == 0) {
-        return put(in->key_s, in->value_s, connection_fd, shar_mem, sub);
+        return put(in->key_s, in->value_s, connection_fd, shar_mem, sub, msg_id);
     }
 
     else if (strcmp(in->command_s, "DEL") == 0) {
-        return del(in->key_s, connection_fd, shar_mem, sub);
+        return del(in->key_s, connection_fd, shar_mem, sub, msg_id);
     }
 
     else if (strcmp(in->command_s, "QUIT") == 0) {

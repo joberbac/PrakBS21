@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <sys/msg.h>
 #include <stdio.h>
 #include <string.h>
 #include "sub.h"
@@ -53,7 +54,7 @@ int main() {
 
     /*SEMAPHORE*/
     int sem_id;                                             //id für das Semaphor
-    sem_id = semget(IPC_PRIVATE, 1, IPC_CREAT|0777);        //Anlegen einer neuen Semaphorengruppe, IPC_PRIVATE = Key wird vom Betriebssystem selbst erzeugt,
+    sem_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0777);        //Anlegen einer neuen Semaphorengruppe, IPC_PRIVATE = Key wird vom Betriebssystem selbst erzeugt,
                                                             //1 steht für die Anzahl der Semaphoren in der Gruppe,
                                                             //IPC_CREAT|0777 = Anlegen einer neuen Gruppe mit uneingeschränktem Zugriff
     if (sem_id == -1) {
@@ -64,7 +65,9 @@ int main() {
 
 
     /*NACHRICHTENWARTESCHLANGE*/
-
+    int msg_id = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
+    if (shm_id == -1)
+        error_exit("Error at message queue");
     /*NACHRICHTENWARTESCHLANGE ENDE*/
 
 
@@ -82,41 +85,55 @@ int main() {
 
         }
         else if (pid == 0) {        //Kindprozess
-            struct sembuf enter, leave;
-            enter.sem_num = leave.sem_num = 0;          //Semaphor 0 in der Gruppe
-            enter.sem_flg = leave.sem_flg = SEM_UNDO;
-            enter.sem_op = -1;                          //Down-Operation, Semaphore wird um diesen Wert vermindert
-            leave.sem_op = 1;                           //Up-Operation, Semaphore wird um diesen Wert erhöht
 
-            int blocked = 0;
+            int pid2 = fork();
+            if (pid2 < 0) {
+                error_exit("Error at fork");
+            }
 
-            do {
-                in = *input_func(&connection_fd);
-
-                if (blocked == 0) {
-                    if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
-                        error_exit("Error at semop");
+            if (pid2 == 0) {
+                while (1) {
+                    receiveMessage(&msg_id, &connection_fd);
                 }
-                if (blocked == 0) {
-                    if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
-                        error_exit("Error at semop");
-                }
+            }
 
-                returnExecCommand = execCommand(&in, &connection_fd, shar_mem, sub);
+            if (pid2 > 0) {
+                struct sembuf enter, leave;
+                enter.sem_num = leave.sem_num = 0;          //Semaphor 0 in der Gruppe
+                enter.sem_flg = leave.sem_flg = SEM_UNDO;
+                enter.sem_op = -1;                          //Down-Operation, Semaphore wird um diesen Wert vermindert
+                leave.sem_op = 1;                           //Up-Operation, Semaphore wird um diesen Wert erhöht
 
-                if (returnExecCommand == 7) {
-                    if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
-                        error_exit("Error at semop");
-                    blocked = 1;
-                }
+                int blocked = 0;
 
-                if (returnExecCommand == 8) {
-                    if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
-                        error_exit("Error at semop");
-                    blocked = 0;
-                }
+                do {
+                    in = *input_func(&connection_fd);
 
-            } while (returnExecCommand != 2);
+                    if (blocked == 0) {
+                        if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
+                            error_exit("Error at semop");
+                    }
+                    if (blocked == 0) {
+                        if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
+                            error_exit("Error at semop");
+                    }
+
+                    returnExecCommand = execCommand(&in, &connection_fd, shar_mem, sub, &msg_id);
+
+                    if (returnExecCommand == 7) {
+                        if (semop(sem_id, &enter, 1) < 0)       //Eintritt in kritischen Bereich
+                            error_exit("Error at semop");
+                        blocked = 1;
+                    }
+
+                    if (returnExecCommand == 8) {
+                        if (semop(sem_id, &leave, 1))       //Verlassen des kritischen Bereichs
+                            error_exit("Error at semop");
+                        blocked = 0;
+                    }
+
+                } while (returnExecCommand != 2);
+            }
         }
 
     }
@@ -126,5 +143,8 @@ int main() {
 
     shmdt(sub);
     shmctl(sub_id, IPC_RMID, 0);
+
+    msgctl(msg_id, IPC_RMID, 0);    //Löschen der Nachrichtenwarteschlange
+
     return 0;
 }
